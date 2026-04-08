@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESQTRON — Intelligent Emergency Ambulance Response System</title>
+    <meta name="description"
+        content="RESQTRON — AI-powered ambulance system for faster, safer emergency response With Real-time monitoring, smart traffic control, and hospital integration.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script
+        src="https://apis.mappls.com/advancedmaps/api/d34b5672f6742bd049fcc75b0b8d4b84/map_sdk?layer=vector&v=3.0&callback=initMappls"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="pulse-ring"></div>
+            <img src="logo.png" alt="RESQTRON" class="loader-icon resqtron-logo" style="width:80px;height:auto;">
+            <p class="loader-text">Initializing RESQTRON...</p>
+        </div>
+    </div>
+
+    <!-- ===================== LOGIN PAGE ===================== -->
+    <section id="login-page" class="login-page">
+        <div class="login-bg-effects">
+            <div class="hero-orb orb-1"></div>
+            <div class="hero-orb orb-2"></div>
+            <div class="hero-orb orb-3"></div>
+            <div class="grid-overlay"></div>
+        </div>
+        <div class="login-container">
+            <div class="login-brand">
+                <div class="login-logo">
+                    <img src="logo.png" alt="RESQTRON" class="resqtron-logo" style="width:120px;height:auto;">
+                </div>
+                <h1>RES<span class="accent">Q</span>TRON</h1>
+                <p>Rapid Response. Real Protection.</p>
+            </div>
+            <div class="login-card">
+                <!-- Login / Register mode toggle -->
+                <div class="login-mode-tabs" id="login-mode-tabs">
+                    <button class="login-mode-tab active" data-mode="login">Login</button>
+                    <button class="login-mode-tab" data-mode="register">Register</button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <div id="login-panel">
+                    <div class="login-tabs">
+                        <button class="login-tab active" data-role="admin">
+                            <i class="fa-solid fa-shield-halved"></i> Admin
+                        </button>
+                        <button class="login-tab" data-role="patient">
+                            <i class="fa-solid fa-user"></i> Patient
+                        </button>
+                    </div>
+                    <form id="login-form">
+                        <div class="login-field">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="login-username" placeholder="Email Address" required
+                                autocomplete="off">
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="login-password" placeholder="Password" required>
+                        </div>
+                        <div id="login-error" class="login-error" style="display:none">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span id="login-error-text">Invalid credentials. Try again.</span>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-glow login-submit">
+                            <i class="fa-solid fa-right-to-bracket"></i> <span>Login</span>
+                        </button>
+                    </form>
+                    <div class="login-hint">
+                        <p><i class="fa-solid fa-lock"></i> Enter your credentials to access the system.</p>
+                    </div>
+                </div>
+
+                <!-- REGISTER FORM -->
+                <div id="register-panel" style="display:none">
+                    <form id="register-form">
+                        <div class="login-field">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <input type="text" id="reg-fullname" placeholder="Full Name" required>
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="reg-username" placeholder="Choose Username" required
+                                autocomplete="off">
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="reg-email" placeholder="Email Address" required>
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="reg-phone" placeholder="Phone Number" required>
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="reg-password" placeholder="Create Password" required>
+                        </div>
+                        <div class="login-field">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="reg-confirm" placeholder="Confirm Password" required>
+                        </div>
+                        <div id="register-error" class="login-error" style="display:none">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span id="register-error-text">Error</span>
+                        </div>
+                        <div id="register-success" class="login-success" style="display:none">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Account created! You can now login.</span>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-glow login-submit">
+                            <i class="fa-solid fa-user-plus"></i> <span>Create Account</span>
+                        </button>
+                    </form>
+                    <div class="login-hint">
+                        <p>New patients can register here. Admins are created by system admin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <nav id="main-nav" style="display:none">
+        <div class="nav-container">
+            <a href="#" class="nav-logo" data-page="landing">
+                <img src="logo.png" alt="RESQTRON" class="resqtron-logo-nav" style="width:36px;height:auto;">
+                <span>RES<span class="accent">Q</span>TRON</span>
+            </a>
+            <div class="nav-links" id="admin-nav-links">
+                <a href="#" class="nav-link active" data-page="landing"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="#" class="nav-link" data-page="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="#" class="nav-link" data-page="hospital"><i class="fa-solid fa-hospital"></i> Hospitals</a>
+                <a href="#" class="nav-link" data-page="traffic"><i class="fa-solid fa-traffic-light"></i> Traffic control</a>
+                <a href="#" class="nav-link" data-page="communication"><i class="fa-solid fa-satellite-dish"></i>
+                    Communication</a>
+
+                <a href="#" class="nav-link" data-page="admin"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+                <button class="nav-logout" id="btn-logout" title="Logout"><i
+                        class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+            <div class="nav-links" id="patient-nav-links" style="display:none">
+                <a href="#" class="nav-link active" data-page="patient-home"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="#" class="nav-link" data-page="patient-book"><i class="fa-solid fa-truck-medical"></i> Book</a>
+                <a href="#" class="nav-link" data-page="patient-track"><i class="fa-solid fa-location-dot"></i>
+                    Track</a>
+                <a href="#" class="nav-link" data-page="hospital"><i class="fa-solid fa-hospital"></i> Hospitals</a>
+                <a href="#" class="nav-link" data-page="patient-incident"><i
+                        class="fa-solid fa-triangle-exclamation"></i> Report</a>
+                <a href="#" class="nav-link" data-page="patient-profile"><i class="fa-solid fa-user-circle"></i>
+                    Profile</a>
+                <button class="nav-logout" id="btn-logout-patient" title="Logout"><i
+                        class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+            <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Nav Overlay -->
+    <div id="mobile-nav" class="mobile-nav">
+        <a href="#" class="mobile-link" data-page="landing"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="#" class="mobile-link" data-page="dashboard"><i class="fa-solid fa-chart-line"></i> Live Dashboard</a>
+        <a href="#" class="mobile-link" data-page="hospital"><i class="fa-solid fa-hospital"></i> Hospitals</a>
+        <a href="#" class="mobile-link" data-page="traffic"><i class="fa-solid fa-traffic-light"></i> Traffic
+            Control</a>
+        <a href="#" class="mobile-link" data-page="communication"><i class="fa-solid fa-satellite-dish"></i>
+            Communication</a>
+
+        <a href="#" class="mobile-link" data-page="admin"><i class="fa-solid fa-shield-halved"></i> Admin Panel</a>
+    </div>
+
+    <!-- ===================== PAGE: LANDING ===================== -->
+    <section id="page-landing" class="page" style="display:none">
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-bg-effects">
+                <div class="hero-orb orb-1"></div>
+                <div class="hero-orb orb-2"></div>
+                <div class="hero-orb orb-3"></div>
+                <div class="grid-overlay"></div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>AI-Powered Emergency Response</span>
+                </div>
+                <h1>Intelligent Ambulance System for <span class="gradient-text">Faster, Safer</span> Emergency Response
+                </h1>
+                <p class="hero-subtitle">RESQTRON revolutionizes emergency medical services with real-time patient
+                    monitoring, intelligent traffic control, and seamless hospital integration — saving precious minutes
+                    when every second counts.</p>
+                <div class="hero-actions">
+                    <button id="btn-start-simulation" class="btn btn-primary btn-glow">
+                        <i class="fa-solid fa-play"></i> Start
+                    </button>
+                    <button class="btn btn-outline" data-page="dashboard">
+                        <i class="fa-solid fa-chart-line"></i> View Live Dashboard
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" data-counter="2000+">0</span>
+                        <span class="hero-stat-label">Emergencies Handled</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" data-counter="42">0</span>
+                        <span class="hero-stat-label">% Faster Response</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" data-counter="98">0</span>
+                        <span class="hero-stat-label">% Survival Rate</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" data-counter="156+">0</span>
+                        <span class="hero-stat-label">Active Ambulances</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Demo Section -->
+        <div class="section" id="live-demo-section">
+            <div class="section-header">
+                <span class="section-tag">Live Preview</span>
+                <h2>Real-Time Emergency <span class="gradient-text">Monitoring</span></h2>
+                <p>Watch our AI-powered system in action with simulated emergency data</p>
+            </div>
+            <div class="demo-grid">
+                <div class="demo-card vital-card">
+                    <div class="demo-card-header">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        <span>Heart Rate</span>
+                        <span class="status-badge status-normal">Normal</span>
+                    </div>
+                    <div class="vital-value"><span id="demo-hr">78</span> <small>BPM</small></div>
+                    <canvas id="demo-hr-chart"></canvas>
+                </div>
+                <div class="demo-card vital-card">
+                    <div class="demo-card-header">
+                        <i class="fa-solid fa-lungs"></i>
+                        <span>SpO₂ Level</span>
+                        <span class="status-badge status-normal">Normal</span>
+                    </div>
+                    <div class="vital-value"><span id="demo-spo2">97</span><small>%</small></div>
+                    <canvas id="demo-spo2-chart"></canvas>
+                </div>
+                <div class="demo-card vital-card">
+                    <div class="demo-card-header">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <span>Blood Pressure</span>
+                        <span class="status-badge status-normal">Normal</span>
+                    </div>
+                    <div class="vital-value"><span id="demo-bp">120/80</span> <small>mmHg</small></div>
+                    <canvas id="demo-bp-chart"></canvas>
+                </div>
+                <div class="demo-card map-card">
+                    <div class="demo-card-header">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Ambulance Tracker</span>
+                        <span class="status-badge status-active">Active</span>
+                    </div>
+                    <div class="mini-map" id="demo-mini-map">
+                        <div class="map-grid-bg"></div>
+                        <div class="map-route"></div>
+                        <div class="map-ambulance" id="demo-ambulance">
+                            <i class="fa-solid fa-truck-medical"></i>
+                        </div>
+                        <div class="map-hospital">
+                            <i class="fa-solid fa-hospital"></i>
+                        </div>
+                        <div class="map-info">
+                            <span><i class="fa-solid fa-gauge"></i> <span id="demo-speed">67</span> km/h</span>
+                            <span><i class="fa-solid fa-clock"></i> ETA: <span id="demo-eta">6</span> min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag">Core Features</span>
+                <h2>Intelligent Emergency <span class="gradient-text">Infrastructure</span></h2>
+                <p>An ecosystem designed to minimize response time and maximize patient outcomes</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <h3>Real-Time Monitoring</h3>
+                    <p>Continuous patient vital tracking with AI-powered anomaly detection for heart rate, SpO₂, and
+                        blood pressure.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-traffic-light"></i></div>
+                    <h3>Smart Traffic Control</h3>
+                    <p>Automatic signal override system clears the path for emergency vehicles, reducing transit time by
+                        up to 42%.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-hospital"></i></div>
+                    <h3>Hospital Integration</h3>
+                    <p>Auto-detect nearby hospitals, check real-time bed availability, and send advance patient data
+                        alerts.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                    <h3>Communication Hub</h3>
+                    <p>Auto-alerts, SMS notifications, and AI voice assistant keep all stakeholders informed in
+                        real-time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+                    <h3>AI Triage Engine</h3>
+                    <p>Machine learning algorithms assess emergency severity and recommend optimal hospital routing.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Analytics & Reports</h3>
+                    <p>Comprehensive dashboards tracking response metrics, survival rates, and system performance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PAGE: DASHBOARD ===================== -->
+    <section id="page-dashboard" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-chart-line"></i> Live Ambulance Dashboard</h1>
+                <p>Real-time patient monitoring and ambulance tracking</p>
+            </div>
+            <div class="page-header-actions">
+                <button class="btn btn-success btn-sm" id="btn-add-patient"><i class="fa-solid fa-user-plus"></i> Add
+                    Patient</button>
+                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+                <select id="ambulance-select" class="select-input">
+                    <option value="AMB-001">AMB-001 — Critical</option>
+                    <option value="AMB-002">AMB-002 — Stable</option>
+                    <option value="AMB-003">AMB-003 — En Route</option>
+                </select>
+            </div>
+        </div>
+
+
+
+        <!-- Vitals Grid -->
+        <div class="dashboard-grid">
+            <div class="dash-card vitals-card">
+                <div class="dash-card-header">
+                    <h3><i class="fa-solid fa-heart-pulse"></i> Heart Rate</h3>
+                    <span class="status-indicator status-critical" id="hr-status">Critical</span>
+                </div>
+                <div class="vital-big-value">
+                    <span id="dash-hr-value">112</span>
+                    <small>BPM</small>
+                </div>
+                <canvas id="dash-hr-chart"></canvas>
+                <div class="vital-range">Normal: 60-100 BPM</div>
+            </div>
+
+            <div class="dash-card vitals-card">
+                <div class="dash-card-header">
+                    <h3><i class="fa-solid fa-lungs"></i> Oxygen Saturation</h3>
+                    <span class="status-indicator status-warning" id="spo2-status">Warning</span>
+                </div>
+                <div class="vital-big-value">
+                    <span id="dash-spo2-value">93</span>
+                    <small>%</small>
+                </div>
+                <canvas id="dash-spo2-chart"></canvas>
+                <div class="vital-range">Normal: 95-100%</div>
+            </div>
+
+            <div class="dash-card vitals-card">
+                <div class="dash-card-header">
+                    <h3><i class="fa-solid fa-gauge-high"></i> Blood Pressure</h3>
+                    <span class="status-indicator status-warning" id="bp-status">Elevated</span>
+                </div>
+                <div class="vital-big-value">
+                    <span id="dash-bp-value">148/95</span>
+                    <small>mmHg</small>
+                </div>
+                <canvas id="dash-bp-chart"></canvas>
+                <div class="vital-range">Normal: 120/80 mmHg</div>
+            </div>
+
+            <div class="dash-card vitals-card">
+                <div class="dash-card-header">
+                    <h3><i class="fa-solid fa-temperature-half"></i> Temperature</h3>
+                    <span class="status-indicator status-normal" id="temp-status">Normal</span>
+                </div>
+                <div class="vital-big-value">
+                    <span id="dash-temp-value">37.2</span>
+                    <small>°C</small>
+                </div>
+                <canvas id="dash-temp-chart"></canvas>
+                <div class="vital-range">Normal: 36.1-37.2 °C</div>
+            </div>
+        </div>
+
+        <!-- Map + Info Row -->
+        <div class="dashboard-row">
+            <div class="dash-card map-full-card">
+                <div class="dash-card-header">
+                    <h3><i class="fa-solid fa-map-location-dot"></i> Ambulance Tracker</h3>
+                    <div class="map-header-controls">
+                        <button class="btn btn-outline btn-sm" id="btn-relocate-dashboard" title="Re-center map">
+                            <i class="fa-solid fa-crosshairs"></i> Relocate
+                        </button>
+                        <span class="status-badge status-active">Tracking</span>
+                    </div>
+                </div>
+                <div class="full-map">
+                    <div id="dashboard-mappls-map" class="mappls-map-container"></div>
+                    <div class="map-overlay-info">
+                        <div class="map-info-item">
+                            <i class="fa-solid fa-gauge"></i>
+                            <span>Speed: <strong id="dash-speed">72</strong> km/h</span>
+                        </div>
+                        <div class="map-info-item">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>ETA: <strong id="dash-eta">5</strong> min</span>
+                        </div>
+                        <div class="map-info-item">
+                            <i class="fa-solid fa-road"></i>
+                            <span>Distance: <strong id="dash-distance">3.2</strong> km</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dash-card info-card">
+                <div class="dash-card-header">
+                    <h3><i class="fa-solid fa-clipboard-list"></i> Case Summary</h3>
+                </div>
+                <div class="case-info">
+                    <div class="case-row"><span class="case-label">Patient</span><span class="case-value">Raj Mehta,
+                            54M</span></div>
+                    <div class="case-row"><span class="case-label">Emergency</span><span
+                            class="case-value critical-text">Cardiac Arrest</span></div>
+                    <div class="case-row"><span class="case-label">Ambulance</span><span
+                            class="case-value">AMB-001</span></div>
+                    <div class="case-row"><span class="case-label">Paramedic</span><span class="case-value">Dr. Priya
+                            Sharma</span></div>
+                    <div class="case-row"><span class="case-label">Destination</span><span class="case-value">City
+                            General Hospital</span></div>
+                    <div class="case-row"><span class="case-label">Dispatch Time</span><span class="case-value"
+                            id="dispatch-time">19:34:22</span></div>
+                    <div class="case-row"><span class="case-label">Status</span><span class="case-value"><span
+                                class="status-badge status-active">En Route</span></span></div>
+                </div>
+                <div class="case-actions">
+                    <button class="btn btn-danger btn-sm" id="btn-escalate"><i
+                            class="fa-solid fa-triangle-exclamation"></i> Escalate</button>
+                    <button class="btn btn-primary btn-sm" id="btn-notify-hospital"><i class="fa-solid fa-bell"></i>
+                        Alert Hospital</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PAGE: HOSPITAL ===================== -->
+    <section id="page-hospital" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-hospital"></i> Hospital Integration</h1>
+                <p>Auto-detected nearby hospitals with real-time availability</p>
+            </div>
+            <div class="page-header-actions">
+                <button class="btn btn-primary btn-sm admin-only-btn" id="btn-add-hospital" style="display:none;"
+                    onclick="openAddHospitalModal()">
+                    <i class="fa-solid fa-plus"></i> Add Hospital
+                </button>
+                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+        </div>
+
+        <div class="hospitals-grid" id="hospitals-grid">
+            <!-- Generated by JS -->
+        </div>
+
+        <!-- Add Hospital Modal (Admin Only) -->
+        <div id="add-hospital-modal" class="modal">
+            <div class="modal-content" style="max-width:560px;">
+                <div class="modal-icon"
+                    style="background:linear-gradient(135deg,#FF6B00,#FF4500);width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fa-solid fa-hospital" style="font-size:1.4rem;color:white;"></i>
+                </div>
+                <h2 style="margin-bottom:1.2rem;">Add New Hospital</h2>
+                <form id="add-hospital-form" onsubmit="submitAddHospital(event)">
+                    <div style="display:grid;gap:0.8rem;">
+                        <div class="input-group">
+                            <i class="fa-solid fa-hospital"></i>
+                            <input type="text" id="new-hosp-name" placeholder="Hospital Name" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="text" id="new-hosp-phone" placeholder="Phone Number" required>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+                            <div class="input-group">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <input type="number" step="any" id="new-hosp-lat" placeholder="Latitude" required>
+                            </div>
+                            <div class="input-group">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <input type="number" step="any" id="new-hosp-lng" placeholder="Longitude" required>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;">
+                            <div class="input-group">
+                                <i class="fa-solid fa-bed"></i>
+                                <input type="number" id="new-hosp-beds" placeholder="Beds" required min="0">
+                            </div>
+                            <div class="input-group">
+                                <i class="fa-solid fa-heart-pulse"></i>
+                                <input type="number" id="new-hosp-icu" placeholder="ICU" required min="0">
+                            </div>
+                            <div class="input-group">
+                                <i class="fa-solid fa-user-doctor"></i>
+                                <input type="number" id="new-hosp-docs" placeholder="Doctors" required min="0">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-star"></i>
+                            <input type="number" step="0.1" id="new-hosp-rating" placeholder="Rating (1-5)" min="1"
+                                max="5" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <select id="new-hosp-status" required
+                                style="background:var(--bg-card);color:var(--text-primary);border:none;padding:0.6rem;width:100%;font-family:inherit;">
+                                <option value="available">Available</option>
+                                <option value="limited">Limited</option>
+                                <option value="full">Full</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.8rem;margin-top:1.2rem;">
+                        <button type="submit" class="btn btn-primary" style="flex:1;">
+                            <i class="fa-solid fa-plus"></i> Add Hospital
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeAddHospitalModal()" style="flex:1;">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Hospital notification modal -->
+        <div id="hospital-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-icon success">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h2>Hospital Ready Notification Sent ✅</h2>
+                <p>Patient data has been transmitted successfully to <strong id="modal-hospital-name"></strong></p>
+                <div class="modal-details">
+                    <div class="modal-detail-row">
+                        <span>Patient Vitals</span><span class="sent-badge">Sent</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span>Medical History</span><span class="sent-badge">Sent</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span>ETA & Route</span><span class="sent-badge">Sent</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span>Emergency Level</span><span class="sent-badge critical-badge">Critical</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="close-modal">Done</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PAGE: TRAFFIC ===================== -->
+    <section id="page-traffic" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-traffic-light"></i> Smart Traffic Control</h1>
+                <p>Automatic signal override for emergency vehicle corridors</p>
+            </div>
+            <div class="page-header-actions">
+                <select id="traffic-ambulance-select" class="select-input">
+                    <!-- Populated by JS -->
+                </select>
+                <button class="btn btn-primary btn-sm" id="btn-override-all">
+                    <i class="fa-solid fa-bolt"></i> Override All Signals
+                </button>
+            </div>
+        </div>
+
+        <div class="traffic-container">
+            <div class="traffic-map-panel">
+                <div class="traffic-map">
+                    <div class="traffic-map-controls">
+                        <button class="btn btn-outline btn-sm" id="btn-relocate-traffic" title="Re-center map">
+                            <i class="fa-solid fa-crosshairs"></i> Relocate
+                        </button>
+                    </div>
+                    <div id="traffic-mappls-map" class="mappls-map-container"></div>
+                </div>
+            </div>
+
+            <div class="traffic-info-panel">
+                <div class="traffic-status-card">
+                    <h3><i class="fa-solid fa-circle-info"></i> Override Status</h3>
+                    <div id="traffic-log" class="traffic-log">
+                        <div class="log-entry">
+                            <span class="log-time">19:34:22</span>
+                            <span class="log-message">System initialized. Monitoring traffic signals...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="traffic-signals-list">
+                    <h3><i class="fa-solid fa-list"></i> Signal Status</h3>
+                    <div class="signal-item" id="signal-item-1">
+                        <div class="signal-visual">
+                            <span class="signal-light red"></span>
+                            <span class="signal-light yellow"></span>
+                            <span class="signal-light green active"></span>
+                        </div>
+                        <div class="signal-info">
+                            <strong>Junction A — MG Road × 1st Cross</strong>
+                            <span class="signal-status-text overridden">Signal Overridden ✅</span>
+                        </div>
+                    </div>
+                    <div class="signal-item" id="signal-item-2">
+                        <div class="signal-visual">
+                            <span class="signal-light red active"></span>
+                            <span class="signal-light yellow"></span>
+                            <span class="signal-light green"></span>
+                        </div>
+                        <div class="signal-info">
+                            <strong>Junction B — MG Road × 3rd Cross</strong>
+                            <span class="signal-status-text pending">Waiting for approach...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="override-message" id="override-message" style="display:none">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Signal overridden for emergency vehicle 🚨</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PAGE: COMMUNICATION ===================== -->
+    <section id="page-communication" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-satellite-dish"></i> Communication System</h1>
+                <p>Auto-alerts, SMS notifications, and AI voice assistant</p>
+            </div>
+        </div>
+
+        <div class="comm-grid">
+            <!-- Auto Alert Panel -->
+            <div class="comm-card">
+                <div class="comm-card-header">
+                    <i class="fa-solid fa-bell"></i>
+                    <h3>Auto Alerts</h3>
+                </div>
+                <div class="comm-alerts" id="comm-alerts">
+                    <div class="alert-item alert-critical">
+                        <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="alert-content">
+                            <strong>Critical Alert — Cardiac Arrest</strong>
+                            <p>Patient vitals deteriorating. Immediate intervention required.</p>
+                            <span class="alert-time">Just now</span>
+                        </div>
+                    </div>
+                    <div class="alert-item alert-hospital">
+                        <div class="alert-icon"><i class="fa-solid fa-hospital"></i></div>
+                        <div class="alert-content">
+                            <strong>Hospital Notified</strong>
+                            <p>City General Hospital prepared for incoming patient.</p>
+                            <span class="alert-time">2 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alert-item alert-traffic">
+                        <div class="alert-icon"><i class="fa-solid fa-traffic-light"></i></div>
+                        <div class="alert-content">
+                            <strong>Traffic Signal Override</strong>
+                            <p>3 signals cleared on ambulance route.</p>
+                            <span class="alert-time">3 min ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMS Simulation -->
+            <div class="comm-card">
+                <div class="comm-card-header">
+                    <i class="fa-solid fa-comment-sms"></i>
+                    <h3>SMS Notifications</h3>
+                </div>
+                <div class="sms-panel">
+                    <div class="sms-messages" id="sms-messages">
+                        <div class="sms-bubble outgoing">
+                            <p>🚨 EMERGENCY DISPATCH: AMB-001 dispatched to Koramangala, 4th Block. Patient: Male, 54,
+                                suspected cardiac arrest.</p>
+                            <span class="sms-time">19:30</span>
+                        </div>
+                        <div class="sms-bubble incoming">
+                            <p>✅ City General Hospital: ICU prepared. Dr. Anand on standby. Bay 3 allocated.</p>
+                            <span class="sms-time">19:31</span>
+                        </div>
+                        <div class="sms-bubble outgoing">
+                            <p>📍 ETA Update: Patient arriving in 6 minutes — prepare ICU. Vitals: HR 112, SpO₂ 93%, BP
+                                148/95.</p>
+                            <span class="sms-time">19:34</span>
+                        </div>
+                    </div>
+                    <div class="sms-input-area">
+                        <input type="text" id="sms-input" placeholder="Type a quick alert..." class="sms-input">
+                        <button class="btn btn-primary btn-sm" id="btn-send-sms"><i
+                                class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Assistant -->
+            <div class="comm-card comm-voice-card">
+                <div class="comm-card-header">
+                    <i class="fa-solid fa-microphone"></i>
+                    <h3>AI Voice Assistant</h3>
+                </div>
+                <div class="voice-panel">
+                    <div class="voice-visualizer" id="voice-visualizer">
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                    </div>
+                    <p class="voice-text" id="voice-text">"Patient arriving in 6 minutes — prepare ICU"</p>
+                    <button class="btn btn-voice" id="btn-voice">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>Tap to Speak</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PAGE: ANALYTICS ===================== -->
+    <section id="page-analytics" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-chart-bar"></i> Analytics & Reports</h1>
+                <p>Performance metrics, response trends, and survival analytics</p>
+            </div>
+            <div class="page-header-actions">
+                <select id="analytics-period" class="select-input">
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d" selected>Last 30 Days</option>
+                    <option value="90d">Last 90 Days</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon blue"><i class="fa-solid fa-clock"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-counter="8.2">0</span>
+                    <span class="kpi-label">Avg Response Time (min)</span>
+                    <span class="kpi-change positive"><i class="fa-solid fa-arrow-down"></i> 42% faster</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon green"><i class="fa-solid fa-heart-pulse"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-counter="98.2">0</span>
+                    <span class="kpi-label">Survival Rate (%)</span>
+                    <span class="kpi-change positive"><i class="fa-solid fa-arrow-up"></i> 12% increase</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon purple"><i class="fa-solid fa-truck-medical"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-counter="2847">0</span>
+                    <span class="kpi-label">Emergencies Handled</span>
+                    <span class="kpi-change positive"><i class="fa-solid fa-arrow-up"></i> 24% more</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon orange"><i class="fa-solid fa-traffic-light"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value" data-counter="1243">0</span>
+                    <span class="kpi-label">Signals Overridden</span>
+                    <span class="kpi-change positive"><i class="fa-solid fa-arrow-up"></i> 36% more</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Response Time Improvement</h3>
+                    <span class="chart-badge">Line Chart</span>
+                </div>
+                <canvas id="chart-response-time" height="280"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Emergencies by Category</h3>
+                    <span class="chart-badge">Bar Chart</span>
+                </div>
+                <canvas id="chart-emergencies" height="280"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Survival Rate Trend</h3>
+                    <span class="chart-badge">Area Chart</span>
+                </div>
+                <canvas id="chart-survival" height="280"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Hourly Emergency Distribution</h3>
+                    <span class="chart-badge">Bar Chart</span>
+                </div>
+                <canvas id="chart-hourly" height="280"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PAGE: ADMIN ===================== -->
+    <section id="page-admin" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-shield-halved"></i> Admin Panel</h1>
+                <p>Manage ambulances, monitor cases, and system control</p>
+            </div>
+            <div class="page-header-actions">
+                <button class="btn btn-primary btn-sm" id="btn-add-ambulance"><i class="fa-solid fa-plus"></i> Add
+                    Ambulance</button>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="admin-status-grid">
+            <div class="admin-status-card online">
+                <i class="fa-solid fa-server"></i>
+                <div>
+                    <strong>System Status</strong>
+                    <span>All Systems Operational</span>
+                </div>
+                <span class="status-dot online-dot"></span>
+            </div>
+            <div class="admin-status-card online">
+                <i class="fa-solid fa-database"></i>
+                <div>
+                    <strong>Database</strong>
+                    <span>Connected</span>
+                </div>
+                <span class="status-dot online-dot"></span>
+            </div>
+            <div class="admin-status-card online">
+                <i class="fa-solid fa-satellite-dish"></i>
+                <div>
+                    <strong>GPS Network</strong>
+                    <span>24 satellites locked</span>
+                </div>
+                <span class="status-dot online-dot"></span>
+            </div>
+            <div class="admin-status-card warning">
+                <i class="fa-solid fa-cloud"></i>
+                <div>
+                    <strong>Cloud Sync</strong>
+                    <span>High load — 89% capacity</span>
+                </div>
+                <span class="status-dot warning-dot"></span>
+            </div>
+        </div>
+
+        <!-- Fleet Tracking Map -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3><i class="fa-solid fa-map-location-dot"></i> Live Fleet Tracking</h3>
+                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <div class="fleet-map-container">
+                <div id="fleet-mappls-map" class="mappls-map-container" style="height:450px;border-radius:12px;"></div>
+            </div>
+        </div>
+
+        <!-- Fleet Management -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3><i class="fa-solid fa-truck-medical"></i> Fleet Management</h3>
+                <input type="text" placeholder="Search ambulances..." class="search-input" id="fleet-search">
+            </div>
+            <div class="fleet-table-wrap">
+                <table class="fleet-table" id="fleet-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Driver</th>
+                            <th>Status</th>
+                            <th>Location</th>
+                            <th>Patient</th>
+                            <th>Emergency</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fleet-tbody">
+                        <!-- Generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Live Cases -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3><i class="fa-solid fa-clipboard-list"></i> Active Cases Monitor</h3>
+                <span class="case-count" id="case-count">5 Active Cases</span>
+            </div>
+            <div class="cases-timeline" id="cases-timeline">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+
+        <!-- Patient Bookings (synced from patient portal) -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3><i class="fa-solid fa-users"></i> Patient Portal Bookings</h3>
+                <span class="case-count" id="portal-booking-count">0 bookings</span>
+            </div>
+            <div class="cases-timeline" id="admin-patient-bookings">
+                <div class="history-empty" style="padding:2rem;text-align:center;">
+                    <i class="fa-solid fa-inbox" style="font-size:1.5rem;color:var(--text-muted);"></i>
+                    <p style="color:var(--text-secondary);margin-top:0.5rem;">No patient bookings yet. Bookings from the
+                        patient portal will appear here in real-time.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registered Users -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3><i class="fa-solid fa-user-group"></i> Registered Users</h3>
+                <span class="case-count" id="registered-user-count">0 users</span>
+            </div>
+            <div class="fleet-table-wrap">
+                <table class="fleet-table" id="users-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th>Bookings</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody">
+                        <!-- Generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Patient Form Modal -->
+    <div id="patient-modal" class="modal">
+        <div class="modal-content patient-form-modal">
+            <div class="modal-form-header">
+                <h2><i class="fa-solid fa-user-plus"></i> Add New Patient</h2>
+                <button class="modal-close" id="close-patient-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="patient-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Patient Name *</label>
+                        <input type="text" id="pf-name" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Age / Gender *</label>
+                        <div class="form-row">
+                            <input type="number" id="pf-age" placeholder="Age" min="1" max="120" required>
+                            <select id="pf-gender" required>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Emergency Type *</label>
+                        <select id="pf-emergency" required>
+                            <option value="Cardiac Arrest">Cardiac Arrest</option>
+                            <option value="Stroke">Stroke</option>
+                            <option value="Trauma">Trauma / Accident</option>
+                            <option value="Respiratory">Respiratory Distress</option>
+                            <option value="Burns">Burns</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Severity Level *</label>
+                        <select id="pf-severity" required>
+                            <option value="critical">🔴 Critical</option>
+                            <option value="moderate">🟡 Moderate</option>
+                            <option value="stable">🟢 Stable</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Pickup Location *</label>
+                        <input type="text" id="pf-location" placeholder="Enter address or landmark" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Additional Notes</label>
+                        <textarea id="pf-notes" rows="2"
+                            placeholder="Any relevant medical history or notes..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="pf-phone" placeholder="+91 XXXXX XXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Assign Ambulance</label>
+                        <select id="pf-ambulance">
+                            <option value="auto">🤖 Auto-Assign (Nearest)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" id="cancel-patient-form">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-glow">
+                        <i class="fa-solid fa-truck-medical"></i> Dispatch Ambulance
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== PATIENT PORTAL PAGES ===================== -->
+
+    <!-- Patient Home -->
+    <section id="page-patient-home" class="page">
+        <div class="hero" style="min-height:auto; padding:3rem 2rem;">
+            <div class="hero-bg-effects">
+                <div class="hero-orb orb-1"></div>
+                <div class="hero-orb orb-2"></div>
+            </div>
+            <div class="hero-content" style="max-width:700px;">
+                <div class="hero-badge"><span class="badge-dot"></span><span>Patient Portal</span></div>
+                <h1>Welcome, <span class="gradient-text" id="patient-welcome-name">Patient</span></h1>
+                <p class="hero-subtitle" style="margin-bottom:2rem;">Book ambulances, report emergencies, and track your
+                    ride in real-time.</p>
+                <div class="patient-quick-actions">
+                    <button class="patient-action-card" data-page="patient-book">
+                        <div class="action-icon danger"><i class="fa-solid fa-truck-medical"></i></div>
+                        <h3>Book Ambulance</h3>
+                        <p>Request emergency pickup</p>
+                    </button>
+                    <button class="patient-action-card" data-page="patient-track">
+                        <div class="action-icon blue"><i class="fa-solid fa-location-dot"></i></div>
+                        <h3>Track Ambulance</h3>
+                        <p>Live ambulance location</p>
+                    </button>
+                    <button class="patient-action-card" data-page="patient-incident">
+                        <div class="action-icon orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <h3>Report Incident</h3>
+                        <p>Alert nearby services</p>
+                    </button>
+                    <button class="patient-action-card" data-page="patient-profile">
+                        <div class="action-icon green"><i class="fa-solid fa-user-circle"></i></div>
+                        <h3>My Profile</h3>
+                        <p>View your details</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Patient: Book Ambulance -->
+    <section id="page-patient-book" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-truck-medical"></i> Book Ambulance</h1>
+                <p>Request an emergency ambulance for immediate assistance</p>
+            </div>
+        </div>
+        <div class="patient-form-container">
+            <form id="patient-book-form" class="patient-booking-form">
+                <div class="booking-section">
+                    <h3><i class="fa-solid fa-user"></i> Patient Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="pb-name" placeholder="Enter patient name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Age / Gender *</label>
+                            <div class="form-row">
+                                <input type="number" id="pb-age" placeholder="Age" min="1" max="120" required>
+                                <select id="pb-gender" required>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                    <option value="O">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Number *</label>
+                            <input type="tel" id="pb-phone" placeholder="+91 XXXXX XXXXX" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Group</label>
+                            <select id="pb-blood">
+                                <option value="">Select</option>
+                                <option>A+</option>
+                                <option>A-</option>
+                                <option>B+</option>
+                                <option>B-</option>
+                                <option>AB+</option>
+                                <option>AB-</option>
+                                <option>O+</option>
+                                <option>O-</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-section">
+                    <h3><i class="fa-solid fa-triangle-exclamation"></i> Emergency Info</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Emergency Type *</label>
+                            <select id="pb-emergency" required>
+                                <option value="Cardiac Arrest">❤️ Cardiac Arrest</option>
+                                <option value="Stroke">🧠 Stroke</option>
+                                <option value="Trauma">🩹 Trauma / Accident</option>
+                                <option value="Respiratory">🫁 Respiratory Distress</option>
+                                <option value="Burns">🔥 Burns</option>
+                                <option value="Pregnancy">🤰 Pregnancy</option>
+                                <option value="Other">📋 Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Severity *</label>
+                            <select id="pb-severity" required>
+                                <option value="critical">🔴 Critical — Life Threatening</option>
+                                <option value="moderate">🟡 Moderate — Urgent</option>
+                                <option value="stable">🟢 Stable — Non-urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Pickup Location *</label>
+                            <input type="text" id="pb-location" placeholder="Enter full address or landmark" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Additional Notes</label>
+                            <textarea id="pb-notes" rows="3"
+                                placeholder="Describe symptoms, medical history, allergies..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-submit">
+                    <button type="submit" class="btn btn-danger btn-glow" style="padding:1rem 3rem; font-size:1.1rem;">
+                        <i class="fa-solid fa-truck-medical"></i> Request Emergency Ambulance
+                    </button>
+                    <p class="booking-eta-hint"><i class="fa-solid fa-clock"></i> Estimated arrival: 5-10 minutes</p>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Patient: Track Ambulance -->
+    <section id="page-patient-track" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-location-dot"></i> Track My Ambulance</h1>
+                <p>Real-time ambulance location tracking</p>
+            </div>
+            <div class="page-header-actions">
+                <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+        </div>
+        <div id="patient-track-content" class="patient-track-wrapper">
+            <div id="patient-no-booking" class="no-booking-card">
+                <i class="fa-solid fa-truck-medical"
+                    style="font-size:3rem; color:var(--text-muted); margin-bottom:1rem;"></i>
+                <h3>No Active Booking</h3>
+                <p>You haven't booked an ambulance yet. Book one from the <strong>Book Ambulance</strong> page to start
+                    tracking.</p>
+                <button class="btn btn-primary" data-page="patient-book" style="margin-top:1rem;"><i
+                        class="fa-solid fa-plus"></i> Book Ambulance</button>
+            </div>
+            <div id="patient-active-booking" style="display:none;">
+                <div class="patient-track-grid">
+                    <div class="dash-card" style="flex:2; min-width:300px;">
+                        <div class="dash-card-header">
+                            <h3><i class="fa-solid fa-map-location-dot"></i> Live Map</h3>
+                            <span class="status-badge status-active">Tracking</span>
+                        </div>
+                        <div id="patient-track-map" class="mappls-map-container"
+                            style="height:400px; border-radius:12px;"></div>
+                    </div>
+                    <div class="dash-card" style="flex:1; min-width:260px;">
+                        <div class="dash-card-header">
+                            <h3><i class="fa-solid fa-clipboard-list"></i> Booking Details</h3>
+                        </div>
+                        <div class="case-info" id="patient-booking-info">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Patient: Report Incident -->
+    <section id="page-patient-incident" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-triangle-exclamation"></i> Report Incident</h1>
+                <p>Report an emergency or accident for immediate response</p>
+            </div>
+        </div>
+        <div class="patient-form-container">
+            <form id="incident-form" class="patient-booking-form">
+                <div class="booking-section">
+                    <h3><i class="fa-solid fa-location-dot"></i> Incident Location</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Location / Address *</label>
+                            <div style="display:flex;gap:0.5rem;">
+                                <input type="text" id="inc-location"
+                                    placeholder="Location auto-detected or type manually" required style="flex:1;">
+                                <button type="button" id="btn-detect-location" class="btn btn-primary btn-sm"
+                                    style="white-space:nowrap; padding:0.5rem 1rem;">
+                                    <i class="fa-solid fa-crosshairs"></i> Detect
+                                </button>
+                            </div>
+                            <small id="loc-status"
+                                style="color:var(--text-muted);margin-top:0.3rem;display:block;"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Latitude</label>
+                            <input type="text" id="inc-lat" placeholder="Auto-detected" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude</label>
+                            <input type="text" id="inc-lng" placeholder="Auto-detected" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-section">
+                    <h3><i class="fa-solid fa-circle-info"></i> Incident Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Incident Type *</label>
+                            <select id="inc-type" required>
+                                <option value="accident">🚗 Road Accident</option>
+                                <option value="medical">🏥 Medical Emergency</option>
+                                <option value="fire">🔥 Fire</option>
+                                <option value="collapse">🏗️ Building Collapse</option>
+                                <option value="other">📋 Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Victims *</label>
+                            <input type="number" id="inc-victims" placeholder="Approximate count" min="1" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Description *</label>
+                            <textarea id="inc-description" rows="4"
+                                placeholder="Describe what happened, current situation, any hazards..."
+                                required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" id="inc-name" placeholder="Reporter name">
+                        </div>
+                        <div class="form-group">
+                            <label>Your Phone</label>
+                            <input type="tel" id="inc-phone" placeholder="+91 XXXXX XXXXX">
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-submit">
+                    <button type="submit" class="btn btn-danger btn-glow" style="padding:1rem 3rem; font-size:1.1rem;">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Incident Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Patient: Profile -->
+    <section id="page-patient-profile" class="page">
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-user-circle"></i> My Profile</h1>
+                <p>Your personal information and booking history</p>
+            </div>
+        </div>
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <h2 id="profile-name">Patient User</h2>
+                <p class="profile-role">Registered Patient</p>
+                <div class="profile-details">
+                    <div class="profile-row"><span class="profile-label"><i class="fa-solid fa-phone"></i>
+                            Phone</span><span class="profile-value" id="profile-phone">+91 98765 43210</span></div>
+                    <div class="profile-row"><span class="profile-label"><i class="fa-solid fa-envelope"></i>
+                            Email</span><span class="profile-value" id="profile-email">patient@resqtron.com</span>
+                    </div>
+                    <div class="profile-row"><span class="profile-label"><i class="fa-solid fa-droplet"></i> Blood
+                            Group</span><span class="profile-value" id="profile-blood">O+</span></div>
+                    <div class="profile-row"><span class="profile-label"><i class="fa-solid fa-calendar"></i>
+                            Joined</span><span class="profile-value">March 2026</span></div>
+                    <div class="profile-row"><span class="profile-label"><i class="fa-solid fa-truck-medical"></i> Total
+                            Bookings</span><span class="profile-value" id="profile-bookings">0</span></div>
+                </div>
+            </div>
+            <div class="profile-history-card">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Booking History</h3>
+                <div id="booking-history" class="booking-history">
+                    <div class="history-empty">
+                        <i class="fa-solid fa-inbox" style="font-size:2rem; color:var(--text-muted);"></i>
+                        <p>No bookings yet. Your ambulance booking history will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div id="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
