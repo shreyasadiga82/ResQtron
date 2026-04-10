@@ -2011,59 +2011,17 @@ function initMappls() {
         const btnDetectPb = document.getElementById('btn-detect-pb-location');
         if (btnDetectPb) {
             btnDetectPb.addEventListener('click', () => {
-                autoDetectLocation('pb-location', 'pb-loc-status');
+                autoDetectLocation('pb-location', 'pb-loc-status', 'btn-detect-pb-location');
             });
         }
 
-        // Location detect for Incident Form
-        const btnDetectInc = document.getElementById('btn-detect-location');
-        if (btnDetectInc) {
-            btnDetectInc.addEventListener('click', () => {
-                autoDetectLocation('inc-location', 'loc-status', 'inc-lat', 'inc-lng');
-            });
-        }
+        // Location detect for Incident Form handled within initIncidentForm
 
         document.querySelectorAll('.patient-action-card[data-page]').forEach(card => {
             card.addEventListener('click', () => navigateTo(card.dataset.page));
         });
         document.querySelectorAll('#patient-track-content .btn[data-page]').forEach(btn => {
             btn.addEventListener('click', () => navigateTo(btn.dataset.page));
-        });
-    }
-
-    function autoDetectLocation(inputId, statusId, latId, lngId) {
-        const input = document.getElementById(inputId);
-        const status = document.getElementById(statusId);
-        const latInput = latId ? document.getElementById(latId) : null;
-        const lngInput = lngId ? document.getElementById(lngId) : null;
-
-        if (!navigator.geolocation) {
-            if (status) status.textContent = 'Geolocation is not supported by your browser.';
-            return;
-        }
-
-        if (status) status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Detecting location...';
-
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            
-            if (latInput) latInput.value = lat.toFixed(6);
-            if (lngInput) lngInput.value = lng.toFixed(6);
-
-            try {
-                // Approximate reverse geocoding via standard free API
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-                const data = await res.json();
-                const address = data.display_name || `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-                if (input) input.value = address;
-                if (status) status.innerHTML = '<span style="color:var(--accent-green)"><i class="fa-solid fa-check"></i> Location found</span>';
-            } catch (err) {
-                if (input) input.value = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-                if (status) status.innerHTML = '<span style="color:var(--accent-green)"><i class="fa-solid fa-check"></i> Location set (GPS coordinates)</span>';
-            }
-        }, (err) => {
-            if (status) status.innerHTML = `<span style="color:var(--accent-red)"><i class="fa-solid fa-triangle-exclamation"></i> Error: ${err.message}</span>`;
         });
     }
 
@@ -2236,12 +2194,14 @@ function initMappls() {
         if (!form) return;
 
         // Auto-detect location on page load
-        autoDetectLocation();
+        autoDetectLocation('inc-location', 'loc-status', 'btn-detect-location', 'inc-lat', 'inc-lng');
 
         // Detect location button
         const detectBtn = document.getElementById('btn-detect-location');
         if (detectBtn) {
-            detectBtn.addEventListener('click', autoDetectLocation);
+            detectBtn.addEventListener('click', () => {
+                autoDetectLocation('inc-location', 'loc-status', 'btn-detect-location', 'inc-lat', 'inc-lng');
+            });
         }
 
         form.addEventListener('submit', (e) => {
@@ -2277,12 +2237,12 @@ function initMappls() {
         });
     }
 
-    function autoDetectLocation() {
-        const locInput = document.getElementById('inc-location');
-        const latInput = document.getElementById('inc-lat');
-        const lngInput = document.getElementById('inc-lng');
-        const locStatus = document.getElementById('loc-status');
-        const detectBtn = document.getElementById('btn-detect-location');
+    function autoDetectLocation(locInputId = 'inc-location', locStatusId = 'loc-status', btnId = 'btn-detect-location', latId = 'inc-lat', lngId = 'inc-lng') {
+        const locInput = document.getElementById(locInputId);
+        const latInput = document.getElementById(latId);
+        const lngInput = document.getElementById(lngId);
+        const locStatus = document.getElementById(locStatusId);
+        const detectBtn = document.getElementById(btnId);
 
         if (!navigator.geolocation) {
             if (locStatus) locStatus.textContent = '❌ Geolocation not supported by your browser.';
@@ -2315,8 +2275,8 @@ function initMappls() {
                             lat: lat, lng: lng
                         }, (data) => {
                             if (data && data.results && data.results[0]) {
-                                locInput.value = data.results[0].formatted_address;
-                                locStatus.textContent = `✅ ${data.results[0].formatted_address}`;
+                                if (locInput) locInput.value = data.results[0].formatted_address;
+                                if (locStatus) locStatus.textContent = `✅ ${data.results[0].formatted_address}`;
                             }
                         });
                     } catch (e) { /* reverse geocode not available, keep lat/lng */ }
