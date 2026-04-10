@@ -1577,12 +1577,18 @@ function initMappls() {
                 assignedAmb.eta = 5 + Math.floor(Math.random() * 10);
 
                 // Add to patient queue
-                patientQueue.push({
+                const newPatient = {
                     id: `PAT-${patientIdCounter}`,
                     name, age, gender, emergency, severity, location, notes, phone,
                     assignedAmbulance: assignedAmb.id,
                     timestamp: new Date().toLocaleTimeString('en-IN', { hour12: false })
-                });
+                };
+                patientQueue.push(newPatient);
+                
+                // Add to database
+                const patientsList = getPatients();
+                patientsList.push(newPatient);
+                savePatients(patientsList);
 
                 saveFleetData(); // Prevent active ambulance from reverting on reload
 
@@ -1682,17 +1688,20 @@ function initMappls() {
     let cachedUsers = [];
     let cachedBookings = [];
     let cachedIncidents = [];
+    let cachedPatients = [];
 
     async function fetchFromDB() {
         try {
-            const [u, b, i] = await Promise.all([
+            const [u, b, i, p] = await Promise.all([
                 fetch(`${API_URL}/users`).then(res => res.json()),
                 fetch(`${API_URL}/bookings`).then(res => res.json()),
-                fetch(`${API_URL}/incidents`).then(res => res.json())
+                fetch(`${API_URL}/incidents`).then(res => res.json()),
+                fetch(`${API_URL}/patients`).then(res => res.json())
             ]);
             cachedUsers = Array.isArray(u) ? u : [];
             cachedBookings = Array.isArray(b) ? b : [];
             cachedIncidents = Array.isArray(i) ? i : [];
+            cachedPatients = Array.isArray(p) ? p : [];
         } catch (e) {
             console.error("Failed to load from MongoDB, running in offline mode.", e);
         }
@@ -1724,6 +1733,19 @@ function initMappls() {
         const last = incidents[incidents.length - 1];
         if (last) {
             fetch(`${API_URL}/incidents`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(last)
+            }).catch(e => console.error(e));
+        }
+    }
+
+    function getPatients() { return cachedPatients; }
+    async function savePatients(patients) {
+        cachedPatients = patients;
+        const last = patients[patients.length - 1];
+        if (last) {
+            fetch(`${API_URL}/patients`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(last)
@@ -2059,10 +2081,20 @@ function initMappls() {
                 bookedBy: loggedInUser
             };
 
-            // Save to localStorage DB
+            // Save to network DB
             const allBookings = getBookings();
             allBookings.push({ ...patientBooking });
             saveBookings(allBookings);
+            
+            // Sync patient's blood and phone to DB
+            if (loggedInUser) {
+                fetch(`${API_URL}/users/${loggedInUser}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, blood })
+                }).catch(e => console.error("Failed to update user profile", e));
+            }
+
             saveFleetData(); // Prevent active ambulance from reverting on reload
 
             // Update local history

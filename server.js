@@ -5,10 +5,10 @@ dns.setServers(['8.8.8.8', '8.8.4.4']); // Force Google DNS to bypass local ECON
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-
 const User = require('./models/User');
 const Booking = require('./models/Booking');
 const Incident = require('./models/Incident');
+const Patient = require('./models/Patient');
 
 const app = express();
 app.use(cors());
@@ -54,7 +54,10 @@ async function seedDefaultAdmins() {
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     try {
-        const user = await User.findOne({ username, password });
+        const user = await User.findOne({ 
+            $or: [{ username: username }, { email: username }], 
+            password: password 
+        });
         if (user) {
             res.json({ success: true, user });
         } else {
@@ -67,9 +70,9 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/api/register', async (req, res) => {
     try {
-        const { username } = req.body;
-        const exists = await User.findOne({ username });
-        if (exists) return res.status(400).json({ success: false, message: 'Username taken' });
+        const { username, email } = req.body;
+        const exists = await User.findOne({ $or: [{ username }, { email }] });
+        if (exists) return res.status(400).json({ success: false, message: 'Username or Email taken' });
 
         const user = await User.create(req.body);
         res.json({ success: true, user });
@@ -111,7 +114,26 @@ app.get('/api/bookings', async (req, res) => {
 app.post('/api/bookings', async (req, res) => {
     try {
         const booking = await Booking.create(req.body);
+        if (req.body.bookedBy) {
+            await User.findOneAndUpdate(
+                { username: req.body.bookedBy },
+                { $push: { bookings: booking.id } }
+            );
+        }
         res.json({ success: true, booking });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.put('/api/users/:username', async (req, res) => {
+    try {
+        const user = await User.findOneAndUpdate(
+            { username: req.params.username },
+            { $set: req.body },
+            { new: true }
+        );
+        res.json({ success: true, user });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
@@ -131,6 +153,25 @@ app.post('/api/incidents', async (req, res) => {
     try {
         const incident = await Incident.create(req.body);
         res.json({ success: true, incident });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Patients
+app.get('/api/patients', async (req, res) => {
+    try {
+        const patients = await Patient.find();
+        res.json(patients);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/patients', async (req, res) => {
+    try {
+        const patient = await Patient.create(req.body);
+        res.json({ success: true, patient });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
