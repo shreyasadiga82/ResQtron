@@ -37,7 +37,6 @@ if (!fleetData || fleetData.some(a => a.patient && a.patient.includes('Raj Mehta
     ];
     localStorage.setItem('resqtron_fleet', JSON.stringify(fleetData));
 }
-}
 
 function saveFleetData() {
     localStorage.setItem('resqtron_fleet', JSON.stringify(fleetData));
