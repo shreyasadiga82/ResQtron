@@ -653,8 +653,8 @@ function initMappls() {
     // ===== ROUTE PATH GENERATOR (Realistic road-like routing with turns) =====
     async function generateRoutePath(lat1, lng1, lat2, lng2) {
         try {
-            // Mappls Advanced Routing API (rtype=0 for optimal/fastest avoiding traffic)
-            const res = await fetch(`https://apis.mappls.com/advancedmaps/v1/d34b5672f6742bd049fcc75b0b8d4b84/route_adv/driving/${lng1},${lat1};${lng2},${lat2}?rtype=0&geometries=geojson`);
+            // Use local proxy to avoid browser CORS blocks against Mappls Advanced Routing API
+            const res = await fetch(`${API_URL}/route?startLng=${lng1}&startLat=${lat1}&endLng=${lng2}&endLat=${lat2}`);
             const data = await res.json();
             if (data && data.routes && data.routes[0] && data.routes[0].geometry) {
                 return data.routes[0].geometry.coordinates.map(c => ({ lat: c[1], lng: c[0] }));

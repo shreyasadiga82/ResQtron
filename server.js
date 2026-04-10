@@ -177,5 +177,18 @@ app.post('/api/patients', async (req, res) => {
     }
 });
 
+// Proxy route for Mappls Advanced Routing (Bypasses CORS in browser)
+app.get('/api/route', async (req, res) => {
+    try {
+        const { startLng, startLat, endLng, endLat } = req.query;
+        // Mappls Token from frontend config
+        const fetchRes = await fetch(`https://apis.mappls.com/advancedmaps/v1/d34b5672f6742bd049fcc75b0b8d4b84/route_adv/driving/${startLng},${startLat};${endLng},${endLat}?rtype=0&geometries=geojson`);
+        const data = await fetchRes.json();
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 const PORT = 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
