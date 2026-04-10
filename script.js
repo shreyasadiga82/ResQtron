@@ -677,14 +677,30 @@ function initMappls() {
     // ===== ROUTE PATH GENERATOR (Realistic road-like routing with turns) =====
     async function generateRoutePath(lat1, lng1, lat2, lng2) {
         try {
-            // Use local proxy to avoid browser CORS blocks against Mappls Advanced Routing API
+            // First attempt: Direct HTTPS proxy call to Mappls (Bypasses Mixed Content for Surge deployment)
+            const MTP_TOKEN = 'd34b5672f6742bd049fcc75b0b8d4b84';
+            const mapplsUrl = `https://apis.mappls.com/advancedmaps/v1/${MTP_TOKEN}/route_adv/driving/${lng1},${lat1};${lng2},${lat2}?rtype=0&geometries=geojson`;
+            try {
+                // Using corsproxy.io to confidently bypass CORS from the web browser while retaining HTTPS integrity
+                const directRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(mapplsUrl)}`);
+                if (directRes.ok) {
+                    const data = await directRes.json();
+                    if (data && data.routes && data.routes[0] && data.routes[0].geometry) {
+                        return data.routes[0].geometry.coordinates.map(c => ({ lat: c[1], lng: c[0] }));
+                    }
+                }
+            } catch (e) {
+                console.warn('Direct routing call failed, attempting local node server fallback...');
+            }
+
+            // Second attempt: Fallback to local Node.js server (works internally or on localhost)
             const res = await fetch(`${API_URL}/route?startLng=${lng1}&startLat=${lat1}&endLng=${lng2}&endLat=${lat2}`);
             const data = await res.json();
             if (data && data.routes && data.routes[0] && data.routes[0].geometry) {
                 return data.routes[0].geometry.coordinates.map(c => ({ lat: c[1], lng: c[0] }));
             }
         } catch (e) {
-            console.warn('Advanced routing failed, using mathematical fallback:', e);
+            console.warn('Advanced routing failed, using mathematical fallback: ', e.message);
         }
 
         // Fallback to mathematical pseudo-curve generation if API fails
