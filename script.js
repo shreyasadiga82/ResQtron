@@ -272,6 +272,7 @@ function initMappls() {
     let currentTrafficAmbId = 'AMB-001';
     let dashboardAnimInterval = null;
     let trafficAnimInterval = null;
+    let fleetAnimIntervals = [];
 
     // ===== MAPPLS: DASHBOARD MAP =====
     function destroyMap(map, markers, route, animInterval) {
@@ -585,19 +586,21 @@ function initMappls() {
     async function updateFleetMapMarkers() {
         if (!fleetMap) return;
 
-        // Clear existing markers
         fleetMarkers.forEach(m => {
             try { mappls.remove({ map: fleetMap, layer: m }); } catch (e) { }
         });
         fleetMarkers = [];
+        
+        // Clear existing fleet animations
+        fleetAnimIntervals.forEach(interval => clearInterval(interval));
+        fleetAnimIntervals = [];
 
         // Add marker for each ambulance with the custom ambulance icon
         for (const amb of fleetData) {
             let iconUrl;
             if (amb.status === 'active') {
-                const angle = amb.destLat ? getDirectionAngle(amb.lat, amb.lng, amb.destLat, amb.destLng) : 0;
                 const iconColor = amb.severity === 'critical' ? '#FF4500' : '#FF6B00';
-                iconUrl = createAmbulanceSVG(angle, iconColor);
+                iconUrl = createAmbulanceSVG(0, iconColor); // Angle will be updated dynamically during simulation
             } else if (amb.status === 'available') {
                 iconUrl = createAmbulanceSVG(0, '#22c55e');
             } else {
@@ -629,6 +632,9 @@ function initMappls() {
                     dasharray: [8, 6]
                 });
                 fleetMarkers.push(route);
+                
+                // Simulate movement so the ambulance follows the actual road
+                simulateAmbulanceMovement(fleetMap, marker, amb, routePath, 'fleet');
             }
         }
 
@@ -797,6 +803,7 @@ function initMappls() {
         // Store interval for cleanup
         if (context === 'dashboard') dashboardAnimInterval = interval;
         else if (context === 'traffic') trafficAnimInterval = interval;
+        else if (context === 'fleet') fleetAnimIntervals.push(interval);
     }
 
     // ===== DEMO SECTION (Landing Page) =====
