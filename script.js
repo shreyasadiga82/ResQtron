@@ -60,6 +60,8 @@ let hospitalsData = [
     { name: 'Sparsh Hospital', dist: '6.7 km', beds: 20, icu: 5, docs: 8, lat: 12.9078, lng: 77.6384, status: 'available', rating: 4.2, phone: '+91 80 6624 4444', specialities: ['trauma', 'burns', 'general'] },
     { name: 'Vikram Hospital', dist: '3.2 km', beds: 18, icu: 4, docs: 9, lat: 12.9698, lng: 77.6100, status: 'available', rating: 4.0, phone: '+91 80 2558 9999', specialities: ['cardiac', 'stroke'] },
     { name: 'Bangalore Baptist Hospital', dist: '7.9 km', beds: 32, icu: 8, docs: 14, lat: 13.0105, lng: 77.5560, status: 'available', rating: 4.3, phone: '+91 80 2204 0700', specialities: ['general', 'respiratory'] },
+    { name: 'Victoria Govt Hospital', dist: '3.1 km', beds: 150, icu: 30, docs: 60, lat: 12.9634, lng: 77.5746, status: 'available', rating: 4.1, phone: '+91 80 2670 1150', specialities: ['general', 'trauma', 'burns'] },
+    { name: 'KC General Govt Hospital', dist: '5.4 km', beds: 80, icu: 15, docs: 30, lat: 12.9934, lng: 77.5702, status: 'available', rating: 4.0, phone: '+91 80 2334 1115', specialities: ['general', 'respiratory'] },
     { name: 'Bowring & Lady Curzon Hospital', dist: '2.8 km', beds: 40, icu: 10, docs: 16, lat: 12.9803, lng: 77.6065, status: 'limited', rating: 3.9, phone: '+91 80 2559 1325', specialities: ['general', 'burns'] }
 ];
 
@@ -616,13 +618,13 @@ function initMappls() {
             // Add route lines for active ambulances on fleet map
             if (amb.status === 'active' && amb.destLat) {
                 const routePath = await generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
-                const routeColor = '#3b82f6';
+                const routeColor = '#3b82f6'; // Bright electric blue
                 const route = new mappls.Polyline({
                     map: fleetMap,
                     path: routePath,
                     strokeColor: routeColor,
-                    strokeOpacity: 0.5,
-                    strokeWeight: 3,
+                    strokeOpacity: 1.0,  // Increased from 0.5 to 1.0 for better visibility
+                    strokeWeight: 6,     // Increased from 3 to 6
                     fitbounds: false,
                     dasharray: [8, 6]
                 });
@@ -893,10 +895,11 @@ function initMappls() {
         if (ambSelect) {
             // Populate from fleet data
             ambSelect.innerHTML = '';
-            fleetData.filter(a => a.status === 'active').forEach(a => {
+            fleetData.forEach(a => {
                 const opt = document.createElement('option');
                 opt.value = a.id;
-                opt.textContent = `${a.id} — ${a.severity === 'critical' ? 'Critical' : 'En Route'}`;
+                const statusStr = a.status === 'active' ? (a.severity === 'critical' ? 'Critical' : 'En Route') : 'Idle';
+                opt.textContent = `${a.id} — ${statusStr}`;
                 ambSelect.appendChild(opt);
             });
 
@@ -1219,14 +1222,15 @@ function initMappls() {
             overrideBtn.addEventListener('click', () => overrideAllSignals());
         }
 
-        // Populate traffic ambulance selector with active ambulances
+        // Populate traffic ambulance selector with tracking options
         const trafficAmbSelect = document.getElementById('traffic-ambulance-select');
         if (trafficAmbSelect) {
             trafficAmbSelect.innerHTML = '';
-            fleetData.filter(a => a.status === 'active').forEach(a => {
+            fleetData.forEach(a => {
                 const opt = document.createElement('option');
                 opt.value = a.id;
-                opt.textContent = `${a.id} — ${a.patient} (${a.severity === 'critical' ? '🔴 Critical' : '🟡 Moderate'})`;
+                const servStr = a.status === 'active' ? (a.severity === 'critical' ? '🔴 Critical' : '🟡 Moderate') : '🟢 Idle';
+                opt.textContent = `${a.id} — ${a.status === 'active' ? a.patient : 'Standby'} (${servStr})`;
                 trafficAmbSelect.appendChild(opt);
             });
 
