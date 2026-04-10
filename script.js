@@ -18,18 +18,25 @@ let patientTrackMap = null;
 let patientBookingHistory = [];
 
 let fleetData = JSON.parse(localStorage.getItem('resqtron_fleet') || 'null');
-if (!fleetData) {
+if (localStorage.getItem('force_clear_fleet') !== 'done') {
+    fleetData = null; // Force clear once for new update
+    localStorage.setItem('force_clear_fleet', 'done');
+    localStorage.removeItem('resqtron_fleet');
+}
+
+if (!fleetData || fleetData.some(a => a.patient && a.patient.includes('Raj Mehta'))) {
     fleetData = [
-        { id: 'AMB-001', driver: 'Rajesh Kumar', phone: '+91 98451 23456', status: 'active', lat: 12.9352, lng: 77.6245, patient: 'Raj Mehta, 54M', emergency: 'Cardiac Arrest', paramedic: 'Dr. Priya Sharma', destination: 'City General Hospital', destLat: 12.9611, destLng: 77.6387, speed: 72, eta: 5, severity: 'critical' },
-        { id: 'AMB-002', driver: 'Suresh Patil', phone: '+91 98452 34567', status: 'active', lat: 12.9784, lng: 77.6408, patient: 'Ananya Rao, 32F', emergency: 'Trauma', paramedic: 'Dr. Karthik N', destination: 'Apollo Hospital', destLat: 12.9716, destLng: 77.5946, speed: 58, eta: 8, severity: 'moderate' },
-        { id: 'AMB-003', driver: 'Mohammed Ali', phone: '+91 98453 45678', status: 'active', lat: 12.9563, lng: 77.5857, patient: 'Vikram Singh, 28M', emergency: 'Respiratory Distress', paramedic: 'Dr. Meera Joshi', destination: 'Fortis Hospital', destLat: 12.9906, destLng: 77.5717, speed: 45, eta: 12, severity: 'moderate' },
+        { id: 'AMB-001', driver: 'Rajesh Kumar', phone: '+91 98451 23456', status: 'available', lat: 12.9352, lng: 77.6245, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
+        { id: 'AMB-002', driver: 'Suresh Patil', phone: '+91 98452 34567', status: 'available', lat: 12.9784, lng: 77.6408, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
+        { id: 'AMB-003', driver: 'Mohammed Ali', phone: '+91 98453 45678', status: 'available', lat: 12.9563, lng: 77.5857, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
         { id: 'AMB-004', driver: 'Anil Reddy', phone: '+91 98454 56789', status: 'available', lat: 12.9063, lng: 77.5857, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
         { id: 'AMB-005', driver: 'Prakash Rao', phone: '+91 98455 67890', status: 'available', lat: 12.9698, lng: 77.7500, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
         { id: 'AMB-006', driver: 'Deepak Shetty', phone: '+91 98456 78901', status: 'maintenance', lat: 12.9516, lng: 77.5946, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
-        { id: 'AMB-007', driver: 'Kiran Nair', phone: '+91 98457 89012', status: 'active', lat: 12.9756, lng: 77.6060, patient: 'Lakshmi Devi, 67F', emergency: 'Stroke', paramedic: 'Dr. Ravi Kumar', destination: 'Narayana Health', destLat: 12.9093, destLng: 77.5990, speed: 65, eta: 7, severity: 'critical' },
+        { id: 'AMB-007', driver: 'Kiran Nair', phone: '+91 98457 89012', status: 'available', lat: 12.9756, lng: 77.6060, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
         { id: 'AMB-008', driver: 'Ramesh Gowda', phone: '+91 98458 90123', status: 'available', lat: 13.0358, lng: 77.5970, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' }
     ];
     localStorage.setItem('resqtron_fleet', JSON.stringify(fleetData));
+}
 }
 
 function saveFleetData() {
