@@ -1790,16 +1790,7 @@ function initMappls() {
             });
         });
 
-        // Role tabs
-        const loginTabs = document.querySelectorAll('.login-tab');
-        let selectedRole = 'admin';
-        loginTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                loginTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                selectedRole = tab.dataset.role;
-            });
-        });
+        // Role tabs (removed)
 
         // Login form
         const loginForm = document.getElementById('login-form');
@@ -1825,16 +1816,11 @@ function initMappls() {
                     const data = await res.json();
 
                     if (data.success && data.user) {
-                        if (data.user.role === selectedRole) {
-                            loginError.style.display = 'none';
-                            submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> Syncing Data...';
-                            // Fetch latest data after login
-                            await fetchFromDB();
-                            handleLoginSuccess(data.user);
-                        } else {
-                            errorText.textContent = `This account is registered as ${data.user.role}. Switch tab.`;
-                            loginError.style.display = 'flex';
-                        }
+                        loginError.style.display = 'none';
+                        submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> Syncing Data...';
+                        // Fetch latest data after login
+                        await fetchFromDB();
+                        handleLoginSuccess(data.user);
                     } else {
                         errorText.textContent = 'Invalid username or password. Try again.';
                         loginError.style.display = 'flex';
@@ -1919,10 +1905,7 @@ function initMappls() {
                         document.querySelector('.login-mode-tab[data-mode="login"]').classList.add('active');
                         document.getElementById('login-panel').style.display = '';
                         document.getElementById('register-panel').style.display = 'none';
-                        // Pre-select patient tab
-                        loginTabs.forEach(t => t.classList.remove('active'));
-                        document.querySelector('.login-tab[data-role="patient"]').classList.add('active');
-                        selectedRole = 'patient';
+                        // Pre-select logic removed as tabs are removed
                         // Pre-fill username
                         document.getElementById('login-username').value = username;
                         document.getElementById('login-password').focus();
