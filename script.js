@@ -2003,16 +2003,67 @@ function initMappls() {
         showToast('👋 Logged out successfully.', 'info');
     }
 
-    // ===== PATIENT PORTAL =====
     function initPatientPortal() {
         initPatientBookingForm();
         initIncidentForm();
+
+        // Location detect for Patient Booking
+        const btnDetectPb = document.getElementById('btn-detect-pb-location');
+        if (btnDetectPb) {
+            btnDetectPb.addEventListener('click', () => {
+                autoDetectLocation('pb-location', 'pb-loc-status');
+            });
+        }
+
+        // Location detect for Incident Form
+        const btnDetectInc = document.getElementById('btn-detect-location');
+        if (btnDetectInc) {
+            btnDetectInc.addEventListener('click', () => {
+                autoDetectLocation('inc-location', 'loc-status', 'inc-lat', 'inc-lng');
+            });
+        }
 
         document.querySelectorAll('.patient-action-card[data-page]').forEach(card => {
             card.addEventListener('click', () => navigateTo(card.dataset.page));
         });
         document.querySelectorAll('#patient-track-content .btn[data-page]').forEach(btn => {
             btn.addEventListener('click', () => navigateTo(btn.dataset.page));
+        });
+    }
+
+    function autoDetectLocation(inputId, statusId, latId, lngId) {
+        const input = document.getElementById(inputId);
+        const status = document.getElementById(statusId);
+        const latInput = latId ? document.getElementById(latId) : null;
+        const lngInput = lngId ? document.getElementById(lngId) : null;
+
+        if (!navigator.geolocation) {
+            if (status) status.textContent = 'Geolocation is not supported by your browser.';
+            return;
+        }
+
+        if (status) status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Detecting location...';
+
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            
+            if (latInput) latInput.value = lat.toFixed(6);
+            if (lngInput) lngInput.value = lng.toFixed(6);
+
+            try {
+                // Approximate reverse geocoding via standard free API
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                const data = await res.json();
+                const address = data.display_name || `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+                if (input) input.value = address;
+                if (status) status.innerHTML = '<span style="color:var(--accent-green)"><i class="fa-solid fa-check"></i> Location found</span>';
+            } catch (err) {
+                if (input) input.value = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+                if (status) status.innerHTML = '<span style="color:var(--accent-green)"><i class="fa-solid fa-check"></i> Location set (GPS coordinates)</span>';
+            }
+        }, (err) => {
+            if (status) status.innerHTML = `<span style="color:var(--accent-red)"><i class="fa-solid fa-triangle-exclamation"></i> Error: ${err.message}</span>`;
         });
     }
 
