@@ -47,14 +47,14 @@ let hospitalsData = [
     { name: 'MS Ramaiah Memorial Hospital', dist: '8.1 km', beds: 42, icu: 10, docs: 20, lat: 13.0291, lng: 77.5647, status: 'available', rating: 4.7, phone: '+91 80 2360 8888' },
     { name: 'NIMHANS Hospital', dist: '3.5 km', beds: 60, icu: 18, docs: 35, lat: 12.9416, lng: 77.5964, status: 'available', rating: 4.9, phone: '+91 80 2699 5000' },
     { name: 'St. John\'s Medical College Hospital', dist: '5.2 km', beds: 38, icu: 9, docs: 16, lat: 12.9286, lng: 77.6213, status: 'limited', rating: 4.5, phone: '+91 80 2206 5000' },
-    { name: 'BGS Gleneagles Global Hospital', dist: '9.3 km', beds: 50, icu: 14, docs: 25, lat: 12.8893, lng: 77.5169, status: 'available', rating: 4.6, phone: '+91 80 2625 5555' },
-    { name: 'Sakra World Hospital', dist: '10.5 km', beds: 35, icu: 8, docs: 15, lat: 12.9353, lng: 77.6922, status: 'available', rating: 4.4, phone: '+91 80 4969 4969' },
-    { name: 'Aster CMI Hospital', dist: '11.2 km', beds: 30, icu: 7, docs: 12, lat: 13.0467, lng: 77.5694, status: 'limited', rating: 4.3, phone: '+91 80 4342 0100' },
-    { name: 'Sagar Hospitals', dist: '4.8 km', beds: 25, icu: 6, docs: 10, lat: 12.9132, lng: 77.5655, status: 'available', rating: 4.1, phone: '+91 80 4969 6969' },
-    { name: 'Sparsh Hospital', dist: '6.7 km', beds: 20, icu: 5, docs: 8, lat: 12.9078, lng: 77.6384, status: 'available', rating: 4.2, phone: '+91 80 6624 4444' },
-    { name: 'Vikram Hospital', dist: '3.2 km', beds: 18, icu: 4, docs: 9, lat: 12.9698, lng: 77.6100, status: 'available', rating: 4.0, phone: '+91 80 2558 9999' },
-    { name: 'Bangalore Baptist Hospital', dist: '7.9 km', beds: 32, icu: 8, docs: 14, lat: 13.0105, lng: 77.5560, status: 'available', rating: 4.3, phone: '+91 80 2204 0700' },
-    { name: 'Bowring & Lady Curzon Hospital', dist: '2.8 km', beds: 40, icu: 10, docs: 16, lat: 12.9803, lng: 77.6065, status: 'limited', rating: 3.9, phone: '+91 80 2559 1325' }
+    { name: 'BGS Gleneagles Global Hospital', dist: '9.3 km', beds: 50, icu: 14, docs: 25, lat: 12.8893, lng: 77.5169, status: 'available', rating: 4.6, phone: '+91 80 2625 5555', specialities: ['cardiac', 'trauma', 'general'] },
+    { name: 'Sakra World Hospital', dist: '10.5 km', beds: 35, icu: 8, docs: 15, lat: 12.9353, lng: 77.6922, status: 'available', rating: 4.4, phone: '+91 80 4969 4969', specialities: ['stroke', 'cardiac', 'general'] },
+    { name: 'Aster CMI Hospital', dist: '11.2 km', beds: 30, icu: 7, docs: 12, lat: 13.0467, lng: 77.5694, status: 'limited', rating: 4.3, phone: '+91 80 4342 0100', specialities: ['trauma', 'general'] },
+    { name: 'Sagar Hospitals', dist: '4.8 km', beds: 25, icu: 6, docs: 10, lat: 12.9132, lng: 77.5655, status: 'available', rating: 4.1, phone: '+91 80 4969 6969', specialities: ['respiratory', 'general'] },
+    { name: 'Sparsh Hospital', dist: '6.7 km', beds: 20, icu: 5, docs: 8, lat: 12.9078, lng: 77.6384, status: 'available', rating: 4.2, phone: '+91 80 6624 4444', specialities: ['trauma', 'burns', 'general'] },
+    { name: 'Vikram Hospital', dist: '3.2 km', beds: 18, icu: 4, docs: 9, lat: 12.9698, lng: 77.6100, status: 'available', rating: 4.0, phone: '+91 80 2558 9999', specialities: ['cardiac', 'stroke'] },
+    { name: 'Bangalore Baptist Hospital', dist: '7.9 km', beds: 32, icu: 8, docs: 14, lat: 13.0105, lng: 77.5560, status: 'available', rating: 4.3, phone: '+91 80 2204 0700', specialities: ['general', 'respiratory'] },
+    { name: 'Bowring & Lady Curzon Hospital', dist: '2.8 km', beds: 40, icu: 10, docs: 16, lat: 12.9803, lng: 77.6065, status: 'limited', rating: 3.9, phone: '+91 80 2559 1325', specialities: ['general', 'burns'] }
 ];
 
 // ===== PATIENT QUEUE =====
@@ -2034,7 +2034,7 @@ function initMappls() {
         const btnDetectPb = document.getElementById('btn-detect-pb-location');
         if (btnDetectPb) {
             btnDetectPb.addEventListener('click', () => {
-                autoDetectLocation('pb-location', 'pb-loc-status', 'btn-detect-pb-location');
+                autoDetectLocation('pb-location', 'pb-loc-status', 'btn-detect-pb-location', 'pb-lat', 'pb-lng');
             });
         }
 
@@ -2062,7 +2062,13 @@ function initMappls() {
             const emergency = document.getElementById('pb-emergency').value;
             const severity = document.getElementById('pb-severity').value;
             const location = document.getElementById('pb-location').value;
+            const latInputVal = document.getElementById('pb-lat') ? parseFloat(document.getElementById('pb-lat').value) : NaN;
+            const lngInputVal = document.getElementById('pb-lng') ? parseFloat(document.getElementById('pb-lng').value) : NaN;
             const notes = document.getElementById('pb-notes').value;
+
+            // Fallback pickup coordinates if autodetection failed or was skipped
+            const pickupLat = isNaN(latInputVal) ? (12.971598 + (Math.random() - 0.5) * 0.1) : latInputVal;
+            const pickupLng = isNaN(lngInputVal) ? (77.594562 + (Math.random() - 0.5) * 0.1) : lngInputVal;
 
             const assignedAmb = fleetData.find(a => a.status === 'available');
             if (!assignedAmb) {
@@ -2070,15 +2076,40 @@ function initMappls() {
                 return;
             }
 
-            // Assign ambulance
+            // Find best hospital nearest to the pickup point equipped for the condition
+            let bestHospital = hospitalsData[0];
+            let minDistance = Infinity;
+
+            hospitalsData.forEach(h => {
+                if (h.beds <= 0 || h.status === 'full') return;
+                
+                // Real-time verify capacity for critical conditions
+                if (severity === 'critical' && h.icu <= 0) return;
+                
+                const conditionMatch = h.specialities ? h.specialities.some(s => emergency.toLowerCase().includes(s)) : true;
+                if (!conditionMatch && severity === 'critical') return; // Must match if critical
+
+                const dLat = h.lat - pickupLat;
+                const dLng = h.lng - pickupLng;
+                const distSq = dLat * dLat + dLng * dLng;
+
+                if (distSq < minDistance) {
+                    minDistance = distSq;
+                    bestHospital = h;
+                }
+            });
+
+            // Ensure the ambulance route departs EXACTLY from the pickup request location to the target hospital
+            assignedAmb.lat = pickupLat;
+            assignedAmb.lng = pickupLng;
             assignedAmb.status = 'active';
             assignedAmb.patient = `${name}, ${age}${gender}`;
             assignedAmb.emergency = emergency;
             assignedAmb.severity = severity;
             assignedAmb.paramedic = 'Dr. Auto-Assigned';
-            assignedAmb.destination = hospitalsData[0].name;
-            assignedAmb.destLat = hospitalsData[0].lat;
-            assignedAmb.destLng = hospitalsData[0].lng;
+            assignedAmb.destination = bestHospital.name;
+            assignedAmb.destLat = bestHospital.lat;
+            assignedAmb.destLng = bestHospital.lng;
             assignedAmb.speed = 60 + Math.floor(Math.random() * 30);
             assignedAmb.eta = 5 + Math.floor(Math.random() * 8);
 
