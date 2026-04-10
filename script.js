@@ -317,7 +317,7 @@ function initMappls() {
         }, 100);
     }
 
-    function loadDashboardAmbulance(amb) {
+    async function loadDashboardAmbulance(amb) {
         if (!dashboardMap) return;
 
         // Clear old markers
@@ -356,8 +356,9 @@ function initMappls() {
         }
 
         // Route polyline with gradient-like dashed pattern
+        let routePath = null;
         if (amb.destLat) {
-            const routePath = generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
+            routePath = await generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
 
             // Shadow route (wider, transparent)
             const shadowRoute = new mappls.Polyline({
@@ -394,7 +395,7 @@ function initMappls() {
         }
 
         // Simulate movement
-        simulateAmbulanceMovement(dashboardMap, ambMarker, amb, 'dashboard');
+        if (routePath) simulateAmbulanceMovement(dashboardMap, ambMarker, amb, routePath, 'dashboard');
     }
 
     // ===== MAPPLS: TRAFFIC MAP =====
@@ -434,7 +435,7 @@ function initMappls() {
         }, 100);
     }
 
-    function loadTrafficAmbulance(amb) {
+    async function loadTrafficAmbulance(amb) {
         if (!trafficMap) return;
 
         // Clear old
@@ -480,6 +481,7 @@ function initMappls() {
         trafficMarkers.push(ambMarker);
 
         // Hospital
+        let routePath = null;
         if (amb.destLat) {
             const hospMarker = new mappls.Marker({
                 map: trafficMap,
@@ -491,7 +493,7 @@ function initMappls() {
             trafficMarkers.push(hospMarker);
 
             // Route with glow
-            const routePath = generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
+            routePath = await generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
 
             const shadowRoute = new mappls.Polyline({
                 map: trafficMap,
@@ -518,7 +520,7 @@ function initMappls() {
         trafficMap.setCenter([amb.lat, amb.lng]);
 
         // Simulate movement
-        simulateAmbulanceMovement(trafficMap, ambMarker, amb, 'traffic');
+        if (routePath) simulateAmbulanceMovement(trafficMap, ambMarker, amb, routePath, 'traffic');
     }
 
     // ===== MAPPLS: FLEET TRACKING MAP =====
@@ -562,7 +564,7 @@ function initMappls() {
         }, 100);
     }
 
-    function updateFleetMapMarkers() {
+    async function updateFleetMapMarkers() {
         if (!fleetMap) return;
 
         // Clear existing markers
@@ -572,7 +574,7 @@ function initMappls() {
         fleetMarkers = [];
 
         // Add marker for each ambulance with the custom ambulance icon
-        fleetData.forEach(amb => {
+        for (const amb of fleetData) {
             let iconUrl;
             if (amb.status === 'active') {
                 const angle = amb.destLat ? getDirectionAngle(amb.lat, amb.lng, amb.destLat, amb.destLng) : 0;
@@ -597,7 +599,7 @@ function initMappls() {
 
             // Add route lines for active ambulances on fleet map
             if (amb.status === 'active' && amb.destLat) {
-                const routePath = generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
+                const routePath = await generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
                 const routeColor = amb.severity === 'critical' ? '#FF4500' : '#FF6B00';
                 const route = new mappls.Polyline({
                     map: fleetMap,
@@ -610,7 +612,7 @@ function initMappls() {
                 });
                 fleetMarkers.push(route);
             }
-        });
+        }
 
         // Also add hospital markers
         hospitalsData.forEach(h => {
@@ -649,7 +651,19 @@ function initMappls() {
     }
 
     // ===== ROUTE PATH GENERATOR (Realistic road-like routing with turns) =====
-    function generateRoutePath(lat1, lng1, lat2, lng2) {
+    async function generateRoutePath(lat1, lng1, lat2, lng2) {
+        try {
+            // Mappls Advanced Routing API (rtype=0 for optimal/fastest avoiding traffic)
+            const res = await fetch(`https://apis.mappls.com/advancedmaps/v1/d34b5672f6742bd049fcc75b0b8d4b84/route_adv/driving/${lng1},${lat1};${lng2},${lat2}?rtype=0&geometries=geojson`);
+            const data = await res.json();
+            if (data && data.routes && data.routes[0] && data.routes[0].geometry) {
+                return data.routes[0].geometry.coordinates.map(c => ({ lat: c[1], lng: c[0] }));
+            }
+        } catch (e) {
+            console.warn('Advanced routing failed, using mathematical fallback:', e);
+        }
+
+        // Fallback to mathematical pseudo-curve generation if API fails
         const path = [];
         const dLat = lat2 - lat1;
         const dLng = lng2 - lng1;
@@ -732,10 +746,9 @@ function initMappls() {
     }
 
     // ===== AMBULANCE MOVEMENT SIMULATION =====
-    function simulateAmbulanceMovement(map, marker, amb, context = 'dashboard') {
-        if (!amb.destLat) return;
+    function simulateAmbulanceMovement(map, marker, amb, path, context = 'dashboard') {
+        if (!amb.destLat || !path || path.length === 0) return;
         let step = 0;
-        const path = generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
 
         const interval = setInterval(() => {
             step = (step + 1) % path.length;
@@ -2154,7 +2167,7 @@ function initMappls() {
             patientTrackMap = new mappls.Map('patient-track-map', {
                 center: [amb.lat, amb.lng], zoom: 14, zoomControl: true, search: false
             });
-            patientTrackMap.addListener('load', () => {
+            patientTrackMap.addListener('load', async () => {
                 container.style.background = '';
                 const angle = amb.destLat ? getDirectionAngle(amb.lat, amb.lng, amb.destLat, amb.destLng) : 0;
                 const iconColor = amb.severity === 'critical' ? '#FF4500' : '#FF6B00';
@@ -2164,6 +2177,7 @@ function initMappls() {
                     icon_url: createAmbulanceSVG(angle, iconColor),
                     width: 52, height: 52
                 });
+                let routePath = null;
                 if (amb.destLat) {
                     new mappls.Marker({
                         map: patientTrackMap, position: { lat: amb.destLat, lng: amb.destLng },
@@ -2171,20 +2185,23 @@ function initMappls() {
                         popupOptions: { openPopup: false },
                         icon_url: 'https://img.icons8.com/color/36/hospital-2.png'
                     });
+                    
+                    routePath = await generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
+                    
+                    // Shadow route
+                    new mappls.Polyline({
+                        map: patientTrackMap, path: routePath,
+                        strokeColor: iconColor, strokeOpacity: 0.15, strokeWeight: 12, fitbounds: true
+                    });
+                    // Main route
+                    new mappls.Polyline({
+                        map: patientTrackMap, path: routePath,
+                        strokeColor: iconColor, strokeOpacity: 0.8, strokeWeight: 4, fitbounds: true,
+                        dasharray: [12, 8]
+                    });
                 }
-                const routePath = generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
-                // Shadow route
-                new mappls.Polyline({
-                    map: patientTrackMap, path: routePath,
-                    strokeColor: iconColor, strokeOpacity: 0.15, strokeWeight: 12, fitbounds: true
-                });
-                // Main route
-                new mappls.Polyline({
-                    map: patientTrackMap, path: routePath,
-                    strokeColor: iconColor, strokeOpacity: 0.8, strokeWeight: 4, fitbounds: true,
-                    dasharray: [12, 8]
-                });
-                simulateAmbulanceMovement(patientTrackMap, ambMarker, amb);
+                
+                if (routePath) simulateAmbulanceMovement(patientTrackMap, ambMarker, amb, routePath, 'patient');
             });
         } catch (e) { console.warn('Patient track map error:', e); }
     }
