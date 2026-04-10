@@ -364,7 +364,7 @@ function initMappls() {
             const shadowRoute = new mappls.Polyline({
                 map: dashboardMap,
                 path: routePath,
-                strokeColor: iconColor,
+                strokeColor: '#3b82f6',
                 strokeOpacity: 0.15,
                 strokeWeight: 12,
                 fitbounds: true
@@ -375,12 +375,17 @@ function initMappls() {
             dashboardRoute = new mappls.Polyline({
                 map: dashboardMap,
                 path: routePath,
-                strokeColor: iconColor,
+                strokeColor: '#3b82f6',
                 strokeOpacity: 0.8,
                 strokeWeight: 4,
                 fitbounds: true,
                 dasharray: [12, 8]
             });
+
+            // Added real-time City Traffic overlay underneath the path
+            if (!dashboardMap.trafficLyr) {
+                try { dashboardMap.trafficLyr = new mappls.TrafficLayer({ map: dashboardMap }); } catch(err){}
+            }
         }
 
         // Update info panel
@@ -498,7 +503,7 @@ function initMappls() {
             const shadowRoute = new mappls.Polyline({
                 map: trafficMap,
                 path: routePath,
-                strokeColor: iconColor,
+                strokeColor: '#3b82f6',
                 strokeOpacity: 0.15,
                 strokeWeight: 12,
                 fitbounds: true
@@ -508,12 +513,17 @@ function initMappls() {
             trafficRoute = new mappls.Polyline({
                 map: trafficMap,
                 path: routePath,
-                strokeColor: iconColor,
+                strokeColor: '#3b82f6',
                 strokeOpacity: 0.8,
                 strokeWeight: 4,
                 fitbounds: true,
                 dasharray: [12, 8]
             });
+
+            // Added real-time City Traffic overlay underneath the path
+            if (!trafficMap.trafficLyr) {
+                try { trafficMap.trafficLyr = new mappls.TrafficLayer({ map: trafficMap }); } catch(err){}
+            }
         }
 
         // Center map
@@ -600,7 +610,7 @@ function initMappls() {
             // Add route lines for active ambulances on fleet map
             if (amb.status === 'active' && amb.destLat) {
                 const routePath = await generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
-                const routeColor = amb.severity === 'critical' ? '#FF4500' : '#FF6B00';
+                const routeColor = '#3b82f6';
                 const route = new mappls.Polyline({
                     map: fleetMap,
                     path: routePath,
@@ -2191,14 +2201,19 @@ function initMappls() {
                     // Shadow route
                     new mappls.Polyline({
                         map: patientTrackMap, path: routePath,
-                        strokeColor: iconColor, strokeOpacity: 0.15, strokeWeight: 12, fitbounds: true
+                        strokeColor: '#3b82f6', strokeOpacity: 0.15, strokeWeight: 12, fitbounds: true
                     });
                     // Main route
                     new mappls.Polyline({
                         map: patientTrackMap, path: routePath,
-                        strokeColor: iconColor, strokeOpacity: 0.8, strokeWeight: 4, fitbounds: true,
+                        strokeColor: '#3b82f6', strokeOpacity: 0.8, strokeWeight: 4, fitbounds: true,
                         dasharray: [12, 8]
                     });
+
+                    // Added real-time City Traffic overlay underneath the path
+                    if (!patientTrackMap.trafficLyr) {
+                        try { patientTrackMap.trafficLyr = new mappls.TrafficLayer({ map: patientTrackMap }); } catch(err){}
+                    }
                 }
                 
                 if (routePath) simulateAmbulanceMovement(patientTrackMap, ambMarker, amb, routePath, 'patient');
