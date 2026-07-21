@@ -18,15 +18,21 @@ let patientTrackMap = null;
 let patientBookingHistory = [];
 
 let fleetData = JSON.parse(localStorage.getItem('resqtron_fleet') || 'null');
-if (!fleetData) {
+if (localStorage.getItem('force_clear_fleet') !== 'done') {
+    fleetData = null; // Force clear once for new update
+    localStorage.setItem('force_clear_fleet', 'done');
+    localStorage.removeItem('resqtron_fleet');
+}
+
+if (!fleetData || fleetData.some(a => a.patient && a.patient.includes('Raj Mehta'))) {
     fleetData = [
-        { id: 'AMB-001', driver: 'Rajesh Kumar', phone: '+91 98451 23456', status: 'active', lat: 12.9352, lng: 77.6245, patient: 'Raj Mehta, 54M', emergency: 'Cardiac Arrest', paramedic: 'Dr. Priya Sharma', destination: 'City General Hospital', destLat: 12.9611, destLng: 77.6387, speed: 72, eta: 5, severity: 'critical' },
-        { id: 'AMB-002', driver: 'Suresh Patil', phone: '+91 98452 34567', status: 'active', lat: 12.9784, lng: 77.6408, patient: 'Ananya Rao, 32F', emergency: 'Trauma', paramedic: 'Dr. Karthik N', destination: 'Apollo Hospital', destLat: 12.9716, destLng: 77.5946, speed: 58, eta: 8, severity: 'moderate' },
-        { id: 'AMB-003', driver: 'Mohammed Ali', phone: '+91 98453 45678', status: 'active', lat: 12.9563, lng: 77.5857, patient: 'Vikram Singh, 28M', emergency: 'Respiratory Distress', paramedic: 'Dr. Meera Joshi', destination: 'Fortis Hospital', destLat: 12.9906, destLng: 77.5717, speed: 45, eta: 12, severity: 'moderate' },
+        { id: 'AMB-001', driver: 'Rajesh Kumar', phone: '+91 98451 23456', status: 'available', lat: 12.9352, lng: 77.6245, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
+        { id: 'AMB-002', driver: 'Suresh Patil', phone: '+91 98452 34567', status: 'available', lat: 12.9784, lng: 77.6408, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
+        { id: 'AMB-003', driver: 'Mohammed Ali', phone: '+91 98453 45678', status: 'available', lat: 12.9563, lng: 77.5857, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
         { id: 'AMB-004', driver: 'Anil Reddy', phone: '+91 98454 56789', status: 'available', lat: 12.9063, lng: 77.5857, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
         { id: 'AMB-005', driver: 'Prakash Rao', phone: '+91 98455 67890', status: 'available', lat: 12.9698, lng: 77.7500, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
         { id: 'AMB-006', driver: 'Deepak Shetty', phone: '+91 98456 78901', status: 'maintenance', lat: 12.9516, lng: 77.5946, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
-        { id: 'AMB-007', driver: 'Kiran Nair', phone: '+91 98457 89012', status: 'active', lat: 12.9756, lng: 77.6060, patient: 'Lakshmi Devi, 67F', emergency: 'Stroke', paramedic: 'Dr. Ravi Kumar', destination: 'Narayana Health', destLat: 12.9093, destLng: 77.5990, speed: 65, eta: 7, severity: 'critical' },
+        { id: 'AMB-007', driver: 'Kiran Nair', phone: '+91 98457 89012', status: 'available', lat: 12.9756, lng: 77.6060, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' },
         { id: 'AMB-008', driver: 'Ramesh Gowda', phone: '+91 98458 90123', status: 'available', lat: 13.0358, lng: 77.5970, patient: '—', emergency: '—', paramedic: '—', destination: '—', destLat: 0, destLng: 0, speed: 0, eta: 0, severity: 'none' }
     ];
     localStorage.setItem('resqtron_fleet', JSON.stringify(fleetData));
@@ -54,6 +60,8 @@ let hospitalsData = [
     { name: 'Sparsh Hospital', dist: '6.7 km', beds: 20, icu: 5, docs: 8, lat: 12.9078, lng: 77.6384, status: 'available', rating: 4.2, phone: '+91 80 6624 4444', specialities: ['trauma', 'burns', 'general'] },
     { name: 'Vikram Hospital', dist: '3.2 km', beds: 18, icu: 4, docs: 9, lat: 12.9698, lng: 77.6100, status: 'available', rating: 4.0, phone: '+91 80 2558 9999', specialities: ['cardiac', 'stroke'] },
     { name: 'Bangalore Baptist Hospital', dist: '7.9 km', beds: 32, icu: 8, docs: 14, lat: 13.0105, lng: 77.5560, status: 'available', rating: 4.3, phone: '+91 80 2204 0700', specialities: ['general', 'respiratory'] },
+    { name: 'Victoria Govt Hospital', dist: '3.1 km', beds: 150, icu: 30, docs: 60, lat: 12.9634, lng: 77.5746, status: 'available', rating: 4.1, phone: '+91 80 2670 1150', specialities: ['general', 'trauma', 'burns'] },
+    { name: 'KC General Govt Hospital', dist: '5.4 km', beds: 80, icu: 15, docs: 30, lat: 12.9934, lng: 77.5702, status: 'available', rating: 4.0, phone: '+91 80 2334 1115', specialities: ['general', 'respiratory'] },
     { name: 'Bowring & Lady Curzon Hospital', dist: '2.8 km', beds: 40, icu: 10, docs: 16, lat: 12.9803, lng: 77.6065, status: 'limited', rating: 3.9, phone: '+91 80 2559 1325', specialities: ['general', 'burns'] }
 ];
 
@@ -264,6 +272,7 @@ function initMappls() {
     let currentTrafficAmbId = 'AMB-001';
     let dashboardAnimInterval = null;
     let trafficAnimInterval = null;
+    let fleetAnimIntervals = [];
 
     // ===== MAPPLS: DASHBOARD MAP =====
     function destroyMap(map, markers, route, animInterval) {
@@ -577,19 +586,21 @@ function initMappls() {
     async function updateFleetMapMarkers() {
         if (!fleetMap) return;
 
-        // Clear existing markers
         fleetMarkers.forEach(m => {
             try { mappls.remove({ map: fleetMap, layer: m }); } catch (e) { }
         });
         fleetMarkers = [];
+        
+        // Clear existing fleet animations
+        fleetAnimIntervals.forEach(interval => clearInterval(interval));
+        fleetAnimIntervals = [];
 
         // Add marker for each ambulance with the custom ambulance icon
         for (const amb of fleetData) {
             let iconUrl;
             if (amb.status === 'active') {
-                const angle = amb.destLat ? getDirectionAngle(amb.lat, amb.lng, amb.destLat, amb.destLng) : 0;
                 const iconColor = amb.severity === 'critical' ? '#FF4500' : '#FF6B00';
-                iconUrl = createAmbulanceSVG(angle, iconColor);
+                iconUrl = createAmbulanceSVG(0, iconColor); // Angle will be updated dynamically during simulation
             } else if (amb.status === 'available') {
                 iconUrl = createAmbulanceSVG(0, '#22c55e');
             } else {
@@ -610,17 +621,20 @@ function initMappls() {
             // Add route lines for active ambulances on fleet map
             if (amb.status === 'active' && amb.destLat) {
                 const routePath = await generateRoutePath(amb.lat, amb.lng, amb.destLat, amb.destLng);
-                const routeColor = '#3b82f6';
+                const routeColor = '#3b82f6'; // Bright electric blue
                 const route = new mappls.Polyline({
                     map: fleetMap,
                     path: routePath,
                     strokeColor: routeColor,
-                    strokeOpacity: 0.5,
-                    strokeWeight: 3,
+                    strokeOpacity: 1.0,  // Increased from 0.5 to 1.0 for better visibility
+                    strokeWeight: 6,     // Increased from 3 to 6
                     fitbounds: false,
                     dasharray: [8, 6]
                 });
                 fleetMarkers.push(route);
+                
+                // Simulate movement so the ambulance follows the actual road
+                simulateAmbulanceMovement(fleetMap, marker, amb, routePath, 'fleet');
             }
         }
 
@@ -663,14 +677,30 @@ function initMappls() {
     // ===== ROUTE PATH GENERATOR (Realistic road-like routing with turns) =====
     async function generateRoutePath(lat1, lng1, lat2, lng2) {
         try {
-            // Use local proxy to avoid browser CORS blocks against Mappls Advanced Routing API
+            // First attempt: Direct HTTPS proxy call to Mappls (Bypasses Mixed Content for Surge deployment)
+            const MTP_TOKEN = 'd34b5672f6742bd049fcc75b0b8d4b84';
+            const mapplsUrl = `https://apis.mappls.com/advancedmaps/v1/${MTP_TOKEN}/route_adv/driving/${lng1},${lat1};${lng2},${lat2}?rtype=0&geometries=geojson`;
+            try {
+                // Using corsproxy.io to confidently bypass CORS from the web browser while retaining HTTPS integrity
+                const directRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(mapplsUrl)}`);
+                if (directRes.ok) {
+                    const data = await directRes.json();
+                    if (data && data.routes && data.routes[0] && data.routes[0].geometry) {
+                        return data.routes[0].geometry.coordinates.map(c => ({ lat: c[1], lng: c[0] }));
+                    }
+                }
+            } catch (e) {
+                console.warn('Direct routing call failed, attempting local node server fallback...');
+            }
+
+            // Second attempt: Fallback to local Node.js server (works internally or on localhost)
             const res = await fetch(`${API_URL}/route?startLng=${lng1}&startLat=${lat1}&endLng=${lng2}&endLat=${lat2}`);
             const data = await res.json();
             if (data && data.routes && data.routes[0] && data.routes[0].geometry) {
                 return data.routes[0].geometry.coordinates.map(c => ({ lat: c[1], lng: c[0] }));
             }
         } catch (e) {
-            console.warn('Advanced routing failed, using mathematical fallback:', e);
+            console.warn('Advanced routing failed, using mathematical fallback: ', e.message);
         }
 
         // Fallback to mathematical pseudo-curve generation if API fails
@@ -789,6 +819,7 @@ function initMappls() {
         // Store interval for cleanup
         if (context === 'dashboard') dashboardAnimInterval = interval;
         else if (context === 'traffic') trafficAnimInterval = interval;
+        else if (context === 'fleet') fleetAnimIntervals.push(interval);
     }
 
     // ===== DEMO SECTION (Landing Page) =====
@@ -887,10 +918,11 @@ function initMappls() {
         if (ambSelect) {
             // Populate from fleet data
             ambSelect.innerHTML = '';
-            fleetData.filter(a => a.status === 'active').forEach(a => {
+            fleetData.forEach(a => {
                 const opt = document.createElement('option');
                 opt.value = a.id;
-                opt.textContent = `${a.id} — ${a.severity === 'critical' ? 'Critical' : 'En Route'}`;
+                const statusStr = a.status === 'active' ? (a.severity === 'critical' ? 'Critical' : 'En Route') : 'Idle';
+                opt.textContent = `${a.id} — ${statusStr}`;
                 ambSelect.appendChild(opt);
             });
 
@@ -1213,14 +1245,15 @@ function initMappls() {
             overrideBtn.addEventListener('click', () => overrideAllSignals());
         }
 
-        // Populate traffic ambulance selector with active ambulances
+        // Populate traffic ambulance selector with tracking options
         const trafficAmbSelect = document.getElementById('traffic-ambulance-select');
         if (trafficAmbSelect) {
             trafficAmbSelect.innerHTML = '';
-            fleetData.filter(a => a.status === 'active').forEach(a => {
+            fleetData.forEach(a => {
                 const opt = document.createElement('option');
                 opt.value = a.id;
-                opt.textContent = `${a.id} — ${a.patient} (${a.severity === 'critical' ? '🔴 Critical' : '🟡 Moderate'})`;
+                const servStr = a.status === 'active' ? (a.severity === 'critical' ? '🔴 Critical' : '🟡 Moderate') : '🟢 Idle';
+                opt.textContent = `${a.id} — ${a.status === 'active' ? a.patient : 'Standby'} (${servStr})`;
                 trafficAmbSelect.appendChild(opt);
             });
 
@@ -1706,7 +1739,9 @@ function initMappls() {
     window.deleteHospital = deleteHospital;
 
     // ===== MONGODB API DATABASE =====
-    const API_URL = 'http://localhost:5000/api';
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:5000/api' 
+        : 'https://resqtron.onrender.com/api';
 
     let cachedUsers = [];
     let cachedBookings = [];
